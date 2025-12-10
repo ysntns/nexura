@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+ENV/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Expo/React Native
+.expo/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.hprof
+
+# Android
+android/app/build/
+android/.gradle/
+*.apk
+*.aab
+
+# iOS
+ios/Pods/
+*.xcworkspace
+*.xcuserdata
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+coverage/
+
+# Misc
+.DS_Store
+*.log
+Thumbs.db
