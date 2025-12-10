@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: nexura-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-nexura}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-nexura_secret}
+      MONGO_INITDB_DATABASE: nexura_db
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - nexura-network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nexura-backend
+    restart: unless-stopped
+    environment:
+      - MONGODB_URL=mongodb://${MONGO_USER:-nexura}:${MONGO_PASSWORD:-nexura_secret}@mongodb:27017
+      - DATABASE_NAME=nexura_db
+      - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-in-production}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEBUG=${DEBUG:-false}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:8081,http://localhost:19006}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    networks:
+      - nexura-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Mongo Express (Development UI)
+  mongo-express:
+    image: mongo-express:1.0-20
+    container_name: nexura-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER:-nexura}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWORD:-nexura_secret}
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - nexura-network
+    profiles:
+      - dev
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  nexura-network:
+    driver: bridge
