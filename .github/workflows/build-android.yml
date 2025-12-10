@@ -1,0 +1,81 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:  # Manuel tetikleme
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli @expo/ngrok
+
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --clean
+        env:
+          EXPO_NO_TELEMETRY: 1
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
+      - name: Build APK (Release)
+        run: |
+          cd android
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexura-ai-release
+          path: frontend/android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Get APK info
+        run: |
+          APK_PATH=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
+          echo "### APK Build Successful! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **File**: $(basename $APK_PATH)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Size**: $APK_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "- **Download**: Check the Artifacts section below" >> $GITHUB_STEP_SUMMARY
