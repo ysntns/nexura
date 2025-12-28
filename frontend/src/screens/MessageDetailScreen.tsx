@@ -25,6 +25,7 @@ export default function MessageDetailScreen() {
   const route = useRoute<any>();
 
   const message: Message = route.params?.message;
+  const styles = createStyles(colors);
 
   if (!message) {
     return (
@@ -64,8 +65,6 @@ export default function MessageDetailScreen() {
       ]
     );
   };
-
-  const styles = createStyles(colors);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -234,8 +233,6 @@ function getRiskColor(risk: string, colors: any): string {
       return colors.text;
   }
 }
-
-const styles = StyleSheet.create({});
 
 const createStyles = (colors: any) =>
   StyleSheet.create({
