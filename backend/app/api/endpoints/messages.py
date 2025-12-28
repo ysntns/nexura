@@ -1,6 +1,6 @@
 """Message analysis endpoints"""
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends, Query, Request
 
 from app.core.database import get_database
 from app.core.security import get_current_user_id
@@ -16,15 +16,22 @@ from app.services.message_service import MessageService
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
+# Rate limit decorator will be imported from main app
+def get_limiter(request: Request):
+    return request.app.state.limiter
+
 
 @router.post("/analyze", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 async def analyze_message(
+    request: Request,
     message: MessageCreate,
     user_id: str = Depends(get_current_user_id),
     db=Depends(get_database),
 ):
     """
     Analyze a message for spam using AI.
+
+    **Rate Limit:** 20 requests per minute per IP
 
     - **content**: Message text to analyze (max 5000 chars)
     - **sender**: Optional sender name
@@ -39,12 +46,17 @@ async def analyze_message(
     - explanation: Human-readable explanation (TR/EN)
     - recommended_action: block/warn/allow
     """
+    # Rate limit: 20 requests per minute
+    limiter = request.app.state.limiter
+    await limiter.check_limit(request, "20/minute")
+
     message_service = MessageService(db)
     return await message_service.analyze_message(user_id, message)
 
 
 @router.post("/analyze/bulk", response_model=BulkAnalysisResponse)
 async def analyze_bulk(
+    http_request: Request,
     request: BulkAnalysisRequest,
     user_id: str = Depends(get_current_user_id),
     db=Depends(get_database),
@@ -52,8 +64,14 @@ async def analyze_bulk(
     """
     Analyze multiple messages at once (max 50).
 
+    **Rate Limit:** 5 requests per minute per IP
+
     Returns summary and individual results for all messages.
     """
+    # Rate limit: 5 requests per minute (more restrictive due to bulk)
+    limiter = http_request.app.state.limiter
+    await limiter.check_limit(http_request, "5/minute")
+
     message_service = MessageService(db)
     result = await message_service.analyze_bulk(user_id, request.messages)
     return BulkAnalysisResponse(**result)

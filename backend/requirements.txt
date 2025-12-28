@@ -29,3 +29,6 @@ httpx==0.26.0
 
 # Utils
 python-dotenv==1.0.0
+
+# Rate Limiting
+slowapi==0.1.9
