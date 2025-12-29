@@ -283,4 +283,49 @@ export const UserAPI = {
   },
 };
 
+// Caller ID & Phone Lookup API
+export interface CallerInfo {
+  phone_number: string;
+  name?: string;
+  email?: string;
+  addresses?: Array<{
+    city?: string;
+    countryCode?: string;
+    timeZone?: string;
+    type?: string;
+  }>;
+  is_spam: boolean;
+  spam_score?: number;
+  carrier?: string;
+  country?: string;
+}
+
+export const CallerAPI = {
+  async lookupNumber(
+    phoneNumber: string,
+    countryCode: string = 'TR'
+  ): Promise<CallerInfo> {
+    const response = await api.post('/caller/lookup', {
+      phone_number: phoneNumber,
+      country_code: countryCode,
+    });
+    return response.data;
+  },
+
+  async bulkLookup(
+    phoneNumbers: string[],
+    countryCode: string = 'TR'
+  ): Promise<CallerInfo[]> {
+    const response = await api.post('/caller/lookup/bulk', {
+      phone_numbers: phoneNumbers,
+      country_code: countryCode,
+    });
+    return response.data;
+  },
+
+  async reportSpam(phoneNumber: string): Promise<void> {
+    await api.post(`/caller/report-spam/${encodeURIComponent(phoneNumber)}`);
+  },
+};
+
 export default api;
