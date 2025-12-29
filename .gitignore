@@ -54,6 +54,8 @@ web-build/
 *.hprof
 
 # Android
+# Using Expo Prebuild - android directory is generated, not committed
+frontend/android/
 android/app/build/
 android/.gradle/
 *.apk
