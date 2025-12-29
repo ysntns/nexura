@@ -350,6 +350,11 @@ export const CallerAPI = {
     });
     return response.data;
   },
+
+  async getMyStats(): Promise<any> {
+    const response = await api.get('/caller/my-stats');
+    return response.data;
+  },
 };
 
 export default api;

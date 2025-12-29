@@ -14,6 +14,7 @@ import HomeScreen from '../screens/HomeScreen';
 import AnalyzeScreen from '../screens/AnalyzeScreen';
 import CallerIDScreen from '../screens/CallerIDScreen';
 import TopSpamScreen from '../screens/TopSpamScreen';
+import UserStatsScreen from '../screens/UserStatsScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -114,6 +115,11 @@ function CallerIDStack() {
         name="TopSpam"
         component={TopSpamScreen}
         options={{ title: 'Top Spam Numbers' }}
+      />
+      <Stack.Screen
+        name="UserStats"
+        component={UserStatsScreen}
+        options={{ title: 'My Contribution' }}
       />
     </Stack.Navigator>
   );

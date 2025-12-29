@@ -149,6 +149,18 @@ export default function CallerIDScreen() {
           <Ionicons name="chevron-forward" size={20} color={colors.error} />
         </TouchableOpacity>
 
+        {/* My Contribution Button */}
+        <TouchableOpacity
+          style={[styles.topSpamButton, { backgroundColor: colors.primary + '15', borderColor: colors.primary }]}
+          onPress={() => navigation.navigate('UserStats')}
+        >
+          <Ionicons name="stats-chart" size={20} color={colors.primary} />
+          <Text style={[styles.topSpamButtonText, { color: colors.primary }]}>
+            My Contribution & Statistics
+          </Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.primary} />
+        </TouchableOpacity>
+
         {/* Phone Number Input */}
         <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
           <Ionicons name="call-outline" size={20} color={colors.textMuted} />
