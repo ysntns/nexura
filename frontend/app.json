@@ -4,10 +4,8 @@
     "slug": "nexura-ai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a2e"
     },
@@ -19,10 +17,6 @@
       "bundleIdentifier": "com.nexura.ai"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#1a1a2e"
-      },
       "package": "com.nexura.ai",
       "permissions": [
         "READ_SMS",
@@ -31,19 +25,12 @@
       ]
     },
     "web": {
-      "favicon": "./src/assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
       "expo-localization",
       "expo-secure-store",
-      [
-        "expo-notifications",
-        {
-          "icon": "./src/assets/notification-icon.png",
-          "color": "#00d9ff"
-        }
-      ]
+      "expo-notifications"
     ],
     "extra": {
       "eas": {
