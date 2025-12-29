@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CallerAPI, CallerInfo } from '../services/api';
+import { useNavigation } from '@react-navigation/native';
 
 // Spam categories matching backend enum
 const SPAM_CATEGORIES = [
@@ -39,6 +40,7 @@ const SPAM_CATEGORIES = [
 export default function CallerIDScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
+  const navigation = useNavigation<any>();
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -134,6 +136,18 @@ export default function CallerIDScreen() {
             Identify unknown callers instantly
           </Text>
         </View>
+
+        {/* Top Spam Numbers Button */}
+        <TouchableOpacity
+          style={[styles.topSpamButton, { backgroundColor: colors.error + '15', borderColor: colors.error }]}
+          onPress={() => navigation.navigate('TopSpam')}
+        >
+          <Ionicons name="shield-outline" size={20} color={colors.error} />
+          <Text style={[styles.topSpamButtonText, { color: colors.error }]}>
+            View Most Reported Spam Numbers
+          </Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.error} />
+        </TouchableOpacity>
 
         {/* Phone Number Input */}
         <View style={[styles.inputContainer, { backgroundColor: colors.surface }]}>
@@ -485,6 +499,22 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     marginTop: 5,
+  },
+  topSpamButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 20,
+    borderWidth: 1.5,
+  },
+  topSpamButtonText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 10,
   },
   inputContainer: {
     flexDirection: 'row',

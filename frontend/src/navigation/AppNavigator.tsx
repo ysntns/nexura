@@ -13,6 +13,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import HomeScreen from '../screens/HomeScreen';
 import AnalyzeScreen from '../screens/AnalyzeScreen';
 import CallerIDScreen from '../screens/CallerIDScreen';
+import TopSpamScreen from '../screens/TopSpamScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -94,6 +95,30 @@ function SettingsStack() {
   );
 }
 
+function CallerIDStack() {
+  const { colors } = useTheme();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.surface },
+        headerTintColor: colors.text,
+      }}
+    >
+      <Stack.Screen
+        name="CallerIDMain"
+        component={CallerIDScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TopSpam"
+        component={TopSpamScreen}
+        options={{ title: 'Top Spam Numbers' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function AppNavigator() {
   const { colors } = useTheme();
   const { t } = useLanguage();
@@ -155,7 +180,7 @@ export default function AppNavigator() {
       />
       <Tab.Screen
         name="CallerID"
-        component={CallerIDScreen}
+        component={CallerIDStack}
         options={{ tabBarLabel: 'Caller ID' }}
       />
       <Tab.Screen

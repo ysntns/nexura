@@ -337,6 +337,19 @@ export const CallerAPI = {
       caller_name: callerName,
     });
   },
+
+  async getTopSpamNumbers(
+    limit: number = 100,
+    minReports: number = 3
+  ): Promise<any[]> {
+    const response = await api.get('/caller/top-spam', {
+      params: {
+        limit: limit,
+        min_reports: minReports,
+      },
+    });
+    return response.data;
+  },
 };
 
 export default api;
