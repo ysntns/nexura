@@ -50,14 +50,14 @@ jobs:
         env:
           EXPO_NO_TELEMETRY: 1
 
-      - name: Update Kotlin version for Expo 54 compatibility
+      - name: Update Kotlin version and Android SDK config for Expo 54 compatibility
         run: |
-          # Add Kotlin version to buildscript block
-          sed -i '/buildscript {/a\  ext {\n    kotlinVersion = '\''2.0.21'\''\n  }' android/build.gradle
+          # Add Kotlin version and Android SDK versions to buildscript block
+          sed -i '/buildscript {/a\  ext {\n    kotlinVersion = '\''2.0.21'\''\n    buildToolsVersion = "35.0.0"\n    minSdkVersion = 24\n    compileSdkVersion = 35\n    targetSdkVersion = 34\n    ndkVersion = "26.1.10909125"\n  }' android/build.gradle
           # Update kotlin-gradle-plugin to use the version variable
           sed -i 's|classpath('\''org.jetbrains.kotlin:kotlin-gradle-plugin'\'')|classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")|' android/build.gradle
           echo "=== Updated build.gradle ==="
-          cat android/build.gradle | head -20
+          cat android/build.gradle | head -35
 
       - name: Fix React Native 0.76 compatibility
         run: |
