@@ -56,16 +56,44 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Generate Android Keystore
+        run: |
+          echo "Generating Android debug keystore..."
+          mkdir -p android/app
+          # Android debug keystore oluştur
+          keytool -genkeypair \
+            -v \
+            -storetype PKCS12 \
+            -keystore android/app/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+          echo "Keystore created successfully"
+        continue-on-error: true
+
       - name: Setup Android Credentials
         run: |
-          # EAS'e otomatik credential oluşturması için environment variable'lar
-          export EAS_BUILD_AUTOSUBMIT=1
-          export CI=1
-          echo "Checking Android credentials..."
-          eas credentials 2>&1 | head -20 || true
+          echo "Configuring EAS to use generated keystore..."
+          # credentials.json oluştur
+          cat > credentials.json << 'EOF'
+          {
+            "android": {
+              "keystore": {
+                "keystorePath": "android/app/debug.keystore",
+                "keystorePassword": "android",
+                "keyAlias": "androiddebugkey",
+                "keyPassword": "android"
+              }
+            }
+          }
+          EOF
+          cat credentials.json
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          EAS_BUILD_AUTOSUBMIT: "1"
 
       - name: EAS Build
         run: eas build --platform android --profile preview --non-interactive --no-wait
