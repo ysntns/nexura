@@ -9,8 +9,7 @@
     },
     "preview": {
       "android": {
-        "buildType": "apk",
-        "credentialsSource": "local"
+        "buildType": "apk"
       },
       "distribution": "internal"
     },
