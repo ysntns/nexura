@@ -45,7 +45,7 @@ jobs:
         run: npm ci
 
       - name: Configure EAS Project
-        run: eas project:init --non-interactive || true
+        run: eas project:init --non-interactive --force || true
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
