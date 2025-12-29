@@ -59,6 +59,13 @@ jobs:
           echo "=== Updated build.gradle ==="
           cat android/build.gradle | head -20
 
+      - name: Fix React Native 0.76 compatibility
+        run: |
+          # Remove enableBundleCompression property (not supported in RN 0.76)
+          sed -i '/enableBundleCompression/d' android/app/build.gradle
+          echo "=== Removed enableBundleCompression ==="
+          cat android/app/build.gradle | head -25
+
       - name: Create assets directory
         run: mkdir -p android/app/src/main/assets
 
