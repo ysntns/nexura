@@ -237,3 +237,54 @@ async def get_top_spam_numbers(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get top spam numbers: {str(e)}"
         )
+
+
+@router.get("/my-stats")
+async def get_my_spam_stats(
+    user_id: str = Depends(get_current_user_id),
+    db = Depends(get_database),
+):
+    """
+    Get current user's spam reporting statistics.
+
+    Returns:
+    - Total reports submitted
+    - Recent reports
+    - Impact metrics (people helped)
+    - Contribution level/badge
+    """
+    spam_service = SpamReportService(db)
+
+    try:
+        # Get user's reports
+        user_reports = await spam_service.get_user_reports(user_id, skip=0, limit=10)
+        total_reports = len(await spam_service.get_user_reports(user_id, skip=0, limit=1000))
+
+        # Calculate impact (sum of all spam scores from reported numbers)
+        impact_score = 0
+        for report in user_reports:
+            phone_stats = await spam_service.get_phone_stats(report["phone_number"])
+            if phone_stats:
+                impact_score += phone_stats.spam_score
+
+        # Determine badge/level
+        badge = "Beginner"
+        if total_reports >= 50:
+            badge = "Expert"
+        elif total_reports >= 20:
+            badge = "Advanced"
+        elif total_reports >= 10:
+            badge = "Contributor"
+
+        return {
+            "total_reports": total_reports,
+            "recent_reports": user_reports[:5],
+            "impact_score": impact_score,
+            "badge": badge,
+            "people_helped": impact_score * 10,  # Estimate: each point helps 10 people
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get user stats: {str(e)}"
+        )
