@@ -49,10 +49,30 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Run Expo Prebuild
+        run: |
+          echo "Running expo prebuild to generate native projects..."
+          npx expo prebuild --platform android --clean || true
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Setup Android Credentials
+        run: |
+          # EAS'e otomatik credential oluşturması için environment variable'lar
+          export EAS_BUILD_AUTOSUBMIT=1
+          export CI=1
+          echo "Checking Android credentials..."
+          eas credentials 2>&1 | head -20 || true
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_BUILD_AUTOSUBMIT: "1"
+
       - name: EAS Build
         run: eas build --platform android --profile preview --non-interactive --no-wait
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_BUILD_AUTOSUBMIT: "1"
+          EXPO_USE_DEV_SERVER: "0"
 
       - name: Build Info
         run: |
