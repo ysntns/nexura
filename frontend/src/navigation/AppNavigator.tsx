@@ -12,6 +12,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 import HomeScreen from '../screens/HomeScreen';
 import AnalyzeScreen from '../screens/AnalyzeScreen';
+import CallerIDScreen from '../screens/CallerIDScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -110,6 +111,9 @@ export default function AppNavigator() {
             case 'Analyze':
               iconName = focused ? 'scan' : 'scan-outline';
               break;
+            case 'CallerID':
+              iconName = focused ? 'call' : 'call-outline';
+              break;
             case 'History':
               iconName = focused ? 'time' : 'time-outline';
               break;
@@ -148,6 +152,11 @@ export default function AppNavigator() {
         name="Analyze"
         component={AnalyzeScreen}
         options={{ tabBarLabel: t('analyze') }}
+      />
+      <Tab.Screen
+        name="CallerID"
+        component={CallerIDScreen}
+        options={{ tabBarLabel: 'Caller ID' }}
       />
       <Tab.Screen
         name="History"

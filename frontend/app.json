@@ -21,7 +21,11 @@
       "permissions": [
         "READ_SMS",
         "RECEIVE_SMS",
-        "NOTIFICATIONS"
+        "NOTIFICATIONS",
+        "READ_PHONE_STATE",
+        "READ_CALL_LOG",
+        "READ_CONTACTS",
+        "CALL_PHONE"
       ]
     },
     "web": {
