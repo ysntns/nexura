@@ -52,9 +52,12 @@ jobs:
 
       - name: Update Kotlin version for Expo 54 compatibility
         run: |
-          sed -i "s/kotlin_version = '.*'/kotlin_version = '2.0.21'/g" android/build.gradle
-          sed -i 's/ext.kotlinVersion = ".*"/ext.kotlinVersion = "2.0.21"/g' android/build.gradle
-          cat android/build.gradle | grep -i kotlin
+          # Add Kotlin version to buildscript block
+          sed -i '/buildscript {/a\  ext {\n    kotlinVersion = '\''2.0.21'\''\n  }' android/build.gradle
+          # Update kotlin-gradle-plugin to use the version variable
+          sed -i 's|classpath('\''org.jetbrains.kotlin:kotlin-gradle-plugin'\'')|classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")|' android/build.gradle
+          echo "=== Updated build.gradle ==="
+          cat android/build.gradle | head -20
 
       - name: Create assets directory
         run: mkdir -p android/app/src/main/assets
