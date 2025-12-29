@@ -22,6 +22,14 @@ from app.models.settings import (
     BlacklistEntry,
     SettingsUpdate,
 )
+from app.models.spam_report import (
+    SpamReportCreate,
+    SpamReportResponse,
+    SpamReportInDB,
+    SpamReportCategory,
+    PhoneNumberStats,
+    CommunitySpamInDB,
+)
 
 __all__ = [
     "UserCreate",
@@ -41,4 +49,10 @@ __all__ = [
     "WhitelistEntry",
     "BlacklistEntry",
     "SettingsUpdate",
+    "SpamReportCreate",
+    "SpamReportResponse",
+    "SpamReportInDB",
+    "SpamReportCategory",
+    "PhoneNumberStats",
+    "CommunitySpamInDB",
 ]

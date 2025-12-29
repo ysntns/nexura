@@ -42,6 +42,26 @@ class Database:
             # Settings collection indexes
             await self.db.settings.create_index("user_id", unique=True, name="settings_user_unique")
 
+            # Spam reports collection indexes
+            await self.db.spam_reports.create_index(
+                [("phone_number", ASCENDING), ("created_at", DESCENDING)],
+                name="spam_reports_phone_created"
+            )
+            await self.db.spam_reports.create_index("reported_by", name="spam_reports_user")
+            await self.db.spam_reports.create_index("category", name="spam_reports_category")
+
+            # Community spam collection indexes
+            await self.db.community_spam.create_index(
+                "phone_number",
+                unique=True,
+                name="community_spam_phone_unique"
+            )
+            await self.db.community_spam.create_index(
+                [("spam_score", DESCENDING), ("total_reports", DESCENDING)],
+                name="community_spam_score"
+            )
+            await self.db.community_spam.create_index("last_reported", name="community_spam_last_reported")
+
             logger.info("✅ Database indexes created successfully")
         except Exception as e:
             logger.warning(f"⚠️  Failed to create some indexes: {e}")
