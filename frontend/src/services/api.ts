@@ -298,6 +298,7 @@ export interface CallerInfo {
   spam_score?: number;
   carrier?: string;
   country?: string;
+  community_reports?: number; // Number of community spam reports
 }
 
 export const CallerAPI = {

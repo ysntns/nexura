@@ -244,6 +244,19 @@ export default function CallerIDScreen() {
               </View>
             </View>
 
+            {/* Community Reports */}
+            {result.community_reports !== undefined && result.community_reports > 0 && (
+              <View style={[styles.communityBox, { backgroundColor: colors.primary + '15' }]}>
+                <Ionicons name="people" size={20} color={colors.primary} />
+                <Text style={[styles.communityText, { color: colors.text }]}>
+                  <Text style={{ fontWeight: 'bold' }}>{result.community_reports}</Text>
+                  {result.community_reports === 1
+                    ? ' person reported this as spam'
+                    : ' people reported this as spam'}
+                </Text>
+              </View>
+            )}
+
             {/* Email */}
             {result.email && (
               <View style={styles.resultRow}>
@@ -570,6 +583,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 10,
     lineHeight: 18,
+  },
+  communityBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+    gap: 10,
+  },
+  communityText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
   },
   // Modal styles
   modalOverlay: {
