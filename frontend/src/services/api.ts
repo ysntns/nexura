@@ -323,8 +323,18 @@ export const CallerAPI = {
     return response.data;
   },
 
-  async reportSpam(phoneNumber: string): Promise<void> {
-    await api.post(`/caller/report-spam/${encodeURIComponent(phoneNumber)}`);
+  async reportSpam(
+    phoneNumber: string,
+    category: string,
+    reason?: string,
+    callerName?: string
+  ): Promise<void> {
+    await api.post('/caller/report-spam', {
+      phone_number: phoneNumber,
+      category: category,
+      reason: reason,
+      caller_name: callerName,
+    });
   },
 };
 

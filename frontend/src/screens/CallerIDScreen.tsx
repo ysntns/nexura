@@ -12,6 +12,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,21 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CallerAPI, CallerInfo } from '../services/api';
 
+// Spam categories matching backend enum
+const SPAM_CATEGORIES = [
+  { value: 'telemarketing', label: 'Telemarketing' },
+  { value: 'scam', label: 'Scam / Dolandırıcılık' },
+  { value: 'fraud', label: 'Fraud / Sahtecilik' },
+  { value: 'robocall', label: 'Robocall / Otomatik Arama' },
+  { value: 'phishing', label: 'Phishing / Kimlik Avı' },
+  { value: 'harassment', label: 'Harassment / Taciz' },
+  { value: 'political', label: 'Political / Siyasi' },
+  { value: 'debt_collector', label: 'Debt Collector / Borç Tahsilat' },
+  { value: 'survey', label: 'Survey / Anket' },
+  { value: 'prank', label: 'Prank / Şaka' },
+  { value: 'other', label: 'Other / Diğer' },
+];
+
 export default function CallerIDScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
@@ -27,6 +43,13 @@ export default function CallerIDScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState<CallerInfo | null>(null);
+
+  // Spam report modal state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('scam');
+  const [reportReason, setReportReason] = useState('');
+  const [callerName, setCallerName] = useState('');
+  const [isReporting, setIsReporting] = useState(false);
 
   const handleLookup = async () => {
     if (!phoneNumber.trim()) {
@@ -50,14 +73,37 @@ export default function CallerIDScreen() {
     }
   };
 
-  const handleReportSpam = async () => {
+  const handleOpenReportModal = () => {
+    if (!result?.phone_number) return;
+    setCallerName(result.name || '');
+    setShowReportModal(true);
+  };
+
+  const handleSubmitReport = async () => {
     if (!result?.phone_number) return;
 
+    setIsReporting(true);
     try {
-      await CallerAPI.reportSpam(result.phone_number);
-      Alert.alert(t('success'), 'Phone number reported as spam');
+      await CallerAPI.reportSpam(
+        result.phone_number,
+        selectedCategory,
+        reportReason || undefined,
+        callerName || undefined
+      );
+
+      setShowReportModal(false);
+      setReportReason('');
+      setSelectedCategory('scam');
+
+      Alert.alert(
+        t('success'),
+        'Thank you! Your report helps protect the community.'
+      );
     } catch (error: any) {
-      Alert.alert(t('error'), 'Failed to report spam');
+      const message = error.response?.data?.detail || 'Failed to report spam';
+      Alert.alert(t('error'), message);
+    } finally {
+      setIsReporting(false);
     }
   };
 
@@ -246,7 +292,7 @@ export default function CallerIDScreen() {
             {/* Report Spam Button */}
             <TouchableOpacity
               style={[styles.reportButton, { backgroundColor: colors.error + '20' }]}
-              onPress={handleReportSpam}
+              onPress={handleOpenReportModal}
             >
               <Ionicons name="flag" size={20} color={colors.error} />
               <Text style={[styles.reportButtonText, { color: colors.error }]}>
@@ -264,6 +310,144 @@ export default function CallerIDScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Spam Report Modal */}
+      <Modal
+        visible={showReportModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowReportModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Report Spam Number
+              </Text>
+              <TouchableOpacity onPress={() => setShowReportModal(false)}>
+                <Ionicons name="close" size={28} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalScroll}>
+              {/* Phone Number Display */}
+              <View style={styles.modalSection}>
+                <Text style={[styles.modalLabel, { color: colors.textMuted }]}>
+                  Phone Number
+                </Text>
+                <Text style={[styles.modalPhoneNumber, { color: colors.text }]}>
+                  {result?.phone_number}
+                </Text>
+              </View>
+
+              {/* Category Selection */}
+              <View style={styles.modalSection}>
+                <Text style={[styles.modalLabel, { color: colors.textMuted }]}>
+                  Category *
+                </Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View style={styles.categoryRow}>
+                    {SPAM_CATEGORIES.map((category) => (
+                      <TouchableOpacity
+                        key={category.value}
+                        style={[
+                          styles.categoryChip,
+                          {
+                            backgroundColor:
+                              selectedCategory === category.value
+                                ? colors.primary
+                                : colors.background,
+                            borderColor: colors.border,
+                          },
+                        ]}
+                        onPress={() => setSelectedCategory(category.value)}
+                      >
+                        <Text
+                          style={[
+                            styles.categoryChipText,
+                            {
+                              color:
+                                selectedCategory === category.value
+                                  ? '#fff'
+                                  : colors.text,
+                            },
+                          ]}
+                        >
+                          {category.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* Caller Name */}
+              <View style={styles.modalSection}>
+                <Text style={[styles.modalLabel, { color: colors.textMuted }]}>
+                  Caller Name (Optional)
+                </Text>
+                <TextInput
+                  style={[
+                    styles.modalInput,
+                    { backgroundColor: colors.background, color: colors.text },
+                  ]}
+                  placeholder="e.g., XYZ Bank, Unknown"
+                  placeholderTextColor={colors.textMuted}
+                  value={callerName}
+                  onChangeText={setCallerName}
+                  maxLength={100}
+                />
+              </View>
+
+              {/* Reason */}
+              <View style={styles.modalSection}>
+                <Text style={[styles.modalLabel, { color: colors.textMuted }]}>
+                  Reason (Optional)
+                </Text>
+                <TextInput
+                  style={[
+                    styles.modalInput,
+                    styles.modalTextArea,
+                    { backgroundColor: colors.background, color: colors.text },
+                  ]}
+                  placeholder="Describe why this is spam..."
+                  placeholderTextColor={colors.textMuted}
+                  value={reportReason}
+                  onChangeText={setReportReason}
+                  multiline
+                  numberOfLines={4}
+                  maxLength={500}
+                  textAlignVertical="top"
+                />
+                <Text style={[styles.characterCount, { color: colors.textMuted }]}>
+                  {reportReason.length}/500
+                </Text>
+              </View>
+
+              {/* Submit Button */}
+              <TouchableOpacity
+                style={[
+                  styles.submitButton,
+                  { backgroundColor: colors.error },
+                  isReporting && styles.buttonDisabled,
+                ]}
+                onPress={handleSubmitReport}
+                disabled={isReporting}
+              >
+                {isReporting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <>
+                    <Ionicons name="flag" size={20} color="#fff" />
+                    <Text style={styles.submitButtonText}>Submit Report</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -386,5 +570,96 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 10,
     lineHeight: 18,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '90%',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalScroll: {
+    padding: 20,
+  },
+  modalSection: {
+    marginBottom: 24,
+  },
+  modalLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  modalPhoneNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginRight: 8,
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  modalInput: {
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  modalTextArea: {
+    height: 100,
+    paddingTop: 12,
+  },
+  characterCount: {
+    fontSize: 12,
+    textAlign: 'right',
+    marginTop: 4,
+  },
+  submitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    paddingVertical: 15,
+    marginTop: 10,
+    marginBottom: 20,
+    elevation: 3,
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });
