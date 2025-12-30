@@ -60,6 +60,8 @@ jobs:
         run: |
           echo "Generating Android debug keystore..."
           mkdir -p android/app
+          # Eğer keystore varsa sil
+          rm -f android/app/debug.keystore
           # Android debug keystore oluştur
           keytool -genkeypair \
             -v \
