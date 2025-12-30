@@ -15,6 +15,7 @@ import AnalyzeScreen from '../screens/AnalyzeScreen';
 import CallerIDScreen from '../screens/CallerIDScreen';
 import TopSpamScreen from '../screens/TopSpamScreen';
 import UserStatsScreen from '../screens/UserStatsScreen';
+import CallHistoryScreen from '../screens/CallHistoryScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SMSHistoryScreen from '../screens/SMSHistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -126,6 +127,11 @@ function CallerIDStack() {
         name="UserStats"
         component={UserStatsScreen}
         options={{ title: 'My Contribution' }}
+      />
+      <Stack.Screen
+        name="CallHistory"
+        component={CallHistoryScreen}
+        options={{ title: 'Call Detection History' }}
       />
     </Stack.Navigator>
   );
