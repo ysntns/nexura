@@ -20,6 +20,8 @@ import HistoryScreen from '../screens/HistoryScreen';
 import SMSHistoryScreen from '../screens/SMSHistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import WhitelistScreen from '../screens/WhitelistScreen';
+import BlacklistScreen from '../screens/BlacklistScreen';
 import MessageDetailScreen from '../screens/MessageDetailScreen';
 
 const Tab = createBottomTabNavigator();
@@ -98,6 +100,16 @@ function SettingsStack() {
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile' }}
+      />
+      <Stack.Screen
+        name="Whitelist"
+        component={WhitelistScreen}
+        options={{ title: 'Whitelist' }}
+      />
+      <Stack.Screen
+        name="Blacklist"
+        component={BlacklistScreen}
+        options={{ title: 'Blacklist' }}
       />
     </Stack.Navigator>
   );

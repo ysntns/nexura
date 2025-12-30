@@ -434,7 +434,10 @@ export default function SettingsScreen() {
         {/* Lists */}
         <Text style={styles.sectionTitle}>Lists</Text>
         <View style={styles.section}>
-          <TouchableOpacity style={styles.settingRow}>
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => navigation.navigate('Whitelist')}
+          >
             <View style={styles.settingInfo}>
               <Ionicons name="checkmark-circle" size={24} color={colors.success} />
               <View style={styles.settingText}>
@@ -445,7 +448,10 @@ export default function SettingsScreen() {
             <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.settingRow}>
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => navigation.navigate('Blacklist')}
+          >
             <View style={styles.settingInfo}>
               <Ionicons name="close-circle" size={24} color={colors.error} />
               <View style={styles.settingText}>
