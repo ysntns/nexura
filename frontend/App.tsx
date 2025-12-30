@@ -10,6 +10,7 @@ import { LanguageProvider } from './src/contexts/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import CallDetectionService from './src/services/CallDetectionService';
+import SMSDetectionService from './src/services/SMSDetectionService';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -18,19 +19,25 @@ function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    // Initialize call detection when user is authenticated
+    // Initialize call detection and SMS detection when user is authenticated
     if (isAuthenticated) {
       CallDetectionService.startListening().catch(error => {
         console.error('Failed to start call detection:', error);
       });
+
+      SMSDetectionService.startListening().catch(error => {
+        console.error('Failed to start SMS detection:', error);
+      });
     } else {
-      // Stop call detection when user logs out
+      // Stop detection services when user logs out
       CallDetectionService.stopListening();
+      SMSDetectionService.stopListening();
     }
 
     // Cleanup on unmount
     return () => {
       CallDetectionService.stopListening();
+      SMSDetectionService.stopListening();
     };
   }, [isAuthenticated]);
 

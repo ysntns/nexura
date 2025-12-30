@@ -20,6 +20,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { UserAPI } from '../services/api';
 import CallDetectionService from '../services/CallDetectionService';
+import SMSDetectionService from '../services/SMSDetectionService';
 import * as Notifications from 'expo-notifications';
 
 export default function SettingsScreen() {
@@ -35,10 +36,13 @@ export default function SettingsScreen() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [callDetectionEnabled, setCallDetectionEnabled] = useState(false);
+  const [smsDetectionEnabled, setSmsDetectionEnabled] = useState(false);
+  const [smsAutoBlock, setSmsAutoBlock] = useState(false);
 
   useEffect(() => {
     loadSettings();
     loadCallDetectionStatus();
+    loadSMSDetectionStatus();
   }, []);
 
   const loadSettings = async () => {
@@ -93,6 +97,68 @@ export default function SettingsScreen() {
     } catch (error) {
       console.error('Failed to toggle call detection:', error);
       Alert.alert('Error', 'Failed to update call detection settings.');
+    }
+  };
+
+  const loadSMSDetectionStatus = async () => {
+    try {
+      const [enabled, autoBlock] = await Promise.all([
+        SMSDetectionService.isEnabled(),
+        SMSDetectionService.isAutoBlockEnabled(),
+      ]);
+      setSmsDetectionEnabled(enabled);
+      setSmsAutoBlock(autoBlock);
+    } catch (error) {
+      console.error('Failed to load SMS detection status:', error);
+    }
+  };
+
+  const toggleSMSDetection = async (value: boolean) => {
+    try {
+      // Request notification permissions if enabling
+      if (value) {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please enable notifications to receive spam warnings for incoming SMS.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+      }
+
+      await SMSDetectionService.setEnabled(value);
+      setSmsDetectionEnabled(value);
+
+      Alert.alert(
+        value ? 'SMS Detection Enabled' : 'SMS Detection Disabled',
+        value
+          ? 'Incoming SMS messages will now be automatically analyzed for spam.'
+          : 'SMS detection has been turned off.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Failed to toggle SMS detection:', error);
+      Alert.alert('Error', 'Failed to update SMS detection settings.');
+    }
+  };
+
+  const toggleSMSAutoBlock = async (value: boolean) => {
+    try {
+      await SMSDetectionService.setAutoBlock(value);
+      setSmsAutoBlock(value);
+
+      Alert.alert(
+        value ? 'Auto-Block Enabled' : 'Auto-Block Disabled',
+        value
+          ? 'Spam SMS messages will be automatically blocked.'
+          : 'Spam SMS will be detected but not automatically blocked.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Failed to toggle SMS auto-block:', error);
+      Alert.alert('Error', 'Failed to update auto-block settings.');
     }
   };
 
@@ -227,6 +293,48 @@ export default function SettingsScreen() {
               thumbColor="#fff"
             />
           </View>
+        </View>
+
+        {/* SMS Detection */}
+        <Text style={styles.sectionTitle}>SMS Detection</Text>
+        <View style={styles.section}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="mail" size={24} color={colors.primary} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingLabel}>Auto SMS Analysis</Text>
+                <Text style={styles.settingDescription}>
+                  Automatically analyze incoming SMS for spam
+                </Text>
+              </View>
+            </View>
+            <Switch
+              value={smsDetectionEnabled}
+              onValueChange={toggleSMSDetection}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#fff"
+            />
+          </View>
+
+          {smsDetectionEnabled && (
+            <View style={styles.settingRow}>
+              <View style={styles.settingInfo}>
+                <Ionicons name="ban" size={24} color={colors.error} />
+                <View style={styles.settingText}>
+                  <Text style={styles.settingLabel}>Auto-Block Spam SMS</Text>
+                  <Text style={styles.settingDescription}>
+                    Automatically block detected spam messages
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={smsAutoBlock}
+                onValueChange={toggleSMSAutoBlock}
+                trackColor={{ false: colors.border, true: colors.error }}
+                thumbColor="#fff"
+              />
+            </View>
+          )}
         </View>
 
         {/* Notifications */}

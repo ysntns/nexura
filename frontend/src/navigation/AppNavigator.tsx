@@ -16,6 +16,7 @@ import CallerIDScreen from '../screens/CallerIDScreen';
 import TopSpamScreen from '../screens/TopSpamScreen';
 import UserStatsScreen from '../screens/UserStatsScreen';
 import HistoryScreen from '../screens/HistoryScreen';
+import SMSHistoryScreen from '../screens/SMSHistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessageDetailScreen from '../screens/MessageDetailScreen';
@@ -67,6 +68,11 @@ function HistoryStack() {
         name="MessageDetail"
         component={MessageDetailScreen}
         options={{ title: 'Message Details' }}
+      />
+      <Stack.Screen
+        name="SMSHistory"
+        component={SMSHistoryScreen}
+        options={{ title: 'SMS Detection History' }}
       />
     </Stack.Navigator>
   );

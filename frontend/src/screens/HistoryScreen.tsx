@@ -126,10 +126,18 @@ export default function HistoryScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('history')}</Text>
-        <Text style={styles.headerSubtitle}>
-          {messages.length} messages analyzed
-        </Text>
+        <View>
+          <Text style={styles.headerTitle}>{t('history')}</Text>
+          <Text style={styles.headerSubtitle}>
+            {messages.length} messages analyzed
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.smsHistoryButton}
+          onPress={() => navigation.navigate('SMSHistory')}
+        >
+          <Ionicons name="mail" size={20} color={colors.primary} />
+        </TouchableOpacity>
       </View>
 
       {/* Filter Tabs */}
@@ -208,6 +216,9 @@ const createStyles = (colors: any) =>
       backgroundColor: colors.background,
     },
     header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       padding: 20,
       paddingBottom: 16,
     },
@@ -220,6 +231,14 @@ const createStyles = (colors: any) =>
       fontSize: 14,
       color: colors.textSecondary,
       marginTop: 4,
+    },
+    smsHistoryButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: colors.primary + '20',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     filterContainer: {
       flexDirection: 'row',
