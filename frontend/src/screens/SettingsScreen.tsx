@@ -19,6 +19,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { UserAPI } from '../services/api';
+import CallDetectionService from '../services/CallDetectionService';
+import * as Notifications from 'expo-notifications';
 
 export default function SettingsScreen() {
   const { colors, theme, toggleTheme } = useTheme();
@@ -32,9 +34,11 @@ export default function SettingsScreen() {
     notifications_enabled: true,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [callDetectionEnabled, setCallDetectionEnabled] = useState(false);
 
   useEffect(() => {
     loadSettings();
+    loadCallDetectionStatus();
   }, []);
 
   const loadSettings = async () => {
@@ -49,6 +53,46 @@ export default function SettingsScreen() {
       console.error('Failed to load settings:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadCallDetectionStatus = async () => {
+    try {
+      const enabled = await CallDetectionService.isEnabled();
+      setCallDetectionEnabled(enabled);
+    } catch (error) {
+      console.error('Failed to load call detection status:', error);
+    }
+  };
+
+  const toggleCallDetection = async (value: boolean) => {
+    try {
+      // Request notification permissions if enabling
+      if (value) {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please enable notifications to receive spam warnings for incoming calls.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+      }
+
+      await CallDetectionService.setEnabled(value);
+      setCallDetectionEnabled(value);
+
+      Alert.alert(
+        value ? 'Call Detection Enabled' : 'Call Detection Disabled',
+        value
+          ? 'You will now receive automatic spam warnings for incoming calls.'
+          : 'Call detection has been turned off.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Failed to toggle call detection:', error);
+      Alert.alert('Error', 'Failed to update call detection settings.');
     }
   };
 
@@ -160,6 +204,28 @@ export default function SettingsScreen() {
               />
             </View>
             <Text style={styles.sliderLabel}>100%</Text>
+          </View>
+        </View>
+
+        {/* Call Detection */}
+        <Text style={styles.sectionTitle}>Call Detection</Text>
+        <View style={styles.section}>
+          <View style={styles.settingRow}>
+            <View style={styles.settingInfo}>
+              <Ionicons name="call" size={24} color={colors.primary} />
+              <View style={styles.settingText}>
+                <Text style={styles.settingLabel}>Auto Spam Detection</Text>
+                <Text style={styles.settingDescription}>
+                  Get instant spam warnings for incoming calls
+                </Text>
+              </View>
+            </View>
+            <Switch
+              value={callDetectionEnabled}
+              onValueChange={toggleCallDetection}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#fff"
+            />
           </View>
         </View>
 

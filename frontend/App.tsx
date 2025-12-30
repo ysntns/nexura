@@ -9,12 +9,30 @@ import { ThemeProvider } from './src/contexts/ThemeContext';
 import { LanguageProvider } from './src/contexts/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
+import CallDetectionService from './src/services/CallDetectionService';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    // Initialize call detection when user is authenticated
+    if (isAuthenticated) {
+      CallDetectionService.startListening().catch(error => {
+        console.error('Failed to start call detection:', error);
+      });
+    } else {
+      // Stop call detection when user logs out
+      CallDetectionService.stopListening();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      CallDetectionService.stopListening();
+    };
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return null;
