@@ -90,6 +90,12 @@ class CallDetectionService {
       return;
     }
 
+    // Check if CallDetectorManager is available (bare workflow only)
+    if (!CallDetectorManager) {
+      console.warn('Call Detector not available. Requires bare React Native workflow or prebuild.');
+      return;
+    }
+
     try {
       this.callDetector = new CallDetectorManager(
         async (event: string, phoneNumber: string) => {
