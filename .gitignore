@@ -76,3 +76,7 @@ coverage/
 .DS_Store
 *.log
 Thumbs.db
+-e 
+# Environment files
+*.env
+*.env.*
