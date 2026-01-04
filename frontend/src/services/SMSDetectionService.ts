@@ -128,6 +128,12 @@ class SMSDetectionService {
       return;
     }
 
+    // Check if SmsListener is available (bare workflow only)
+    if (!SmsListener) {
+      console.warn('SMS Listener not available. Requires bare React Native workflow or prebuild.');
+      return;
+    }
+
     try {
       this.subscription = SmsListener.addListener((message: SMSMessage) => {
         this.handleIncomingSMS(message).catch(error => {
