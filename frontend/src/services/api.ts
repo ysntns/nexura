@@ -6,10 +6,13 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
-// API Configuration - Uses environment variable
-const API_BASE_URL = Constants.expoConfig?.extra?.backendUrl || 
-                     process.env.EXPO_PUBLIC_BACKEND_URL || 
-                     'http://10.0.2.2:8001/api/v1';  // Fallback for Android emulator
+// API Configuration - MUST be set via environment variable
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 
+                     Constants.expoConfig?.extra?.backendUrl;
+
+if (!API_BASE_URL) {
+  throw new Error('EXPO_PUBLIC_BACKEND_URL environment variable is not set. Please configure it in .env file.');
+}
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'nexura_access_token';
