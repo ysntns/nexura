@@ -44,36 +44,68 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     description="""
-# NEXURA-AI - Akıllı Spam Algılama Sistemi
+# Nexura-cAIL - Premium Anti-Spam & Scam Protection
 
-**Türkçe ve İngilizce destekli yapay zeka tabanlı spam ve dolandırıcılık tespit uygulaması.**
+**AI-powered spam detection for calls and SMS with multi-language support (30+ languages).**
 
-## Özellikler / Features
+## Features
 
-- **AI-Powered Detection**: GPT-4o-mini ile yüksek doğruluklu spam tespiti
-- **Turkish Support**: Türkçe mesajlar için optimize edilmiş kalıp tanıma
-- **Auto-Blocking**: Otomatik spam engelleme (yapılandırılabilir eşik değeri)
-- **Whitelist/Blacklist**: Güvenilir ve engellenmiş gönderici yönetimi
-- **Detailed Analytics**: Mesaj istatistikleri ve kategori dağılımı
+- **🛡️ Smart Protection**: AI-powered spam/scam detection
+- **📞 Call Screening**: Real-time caller ID and spam call blocking
+- **📱 SMS Filtering**: Automatic SMS spam filtering
+- **🌍 Multi-Language**: Support for 30+ languages including Turkish, English, Arabic, German, Spanish, French
+- **🤖 Advanced AI**: GPT-5.2 powered detection engine
+- **💎 Premium Tiers**: Free, Premium, and Professional subscriptions
+- **📊 Analytics**: Detailed spam statistics and reports
+- **☁️ Cloud Backup**: Secure cloud storage for premium users
 
-## Spam Kategorileri / Spam Categories
+## Subscription Tiers
 
-| Kategori | Açıklama |
-|----------|----------|
-| betting | Yasadışı bahis/kumar |
-| phishing | Kimlik avı saldırıları |
-| scam | Dolandırıcılık |
-| malware | Zararlı yazılım linkleri |
-| fraud | Kimlik hırsızlığı |
-| lottery | Sahte çekiliş/piyango |
-| promotional | İstenmeyen reklamlar |
+| Tier | Daily Limit | Price (Monthly) | Price (Yearly) |
+|------|-------------|-----------------|----------------|
+| Free | 10 checks | $0 | $0 |
+| Premium | 1,000 checks | $9.99 | $99.99 |
+| Professional | 10,000 checks | $19.99 | $199.99 |
 
-## Risk Seviyeleri / Risk Levels
+## API Endpoints
 
-- **low**: Düşük risk - izin ver
-- **medium**: Orta risk - uyar
-- **high**: Yüksek risk - engelle
-- **critical**: Kritik risk - kesinlikle engelle
+### Authentication
+- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/refresh` - Refresh access token
+
+### Messages
+- `POST /api/v1/messages/analyze` - Analyze message for spam
+- `GET /api/v1/messages` - Get message history
+- `GET /api/v1/messages/stats` - Get statistics
+
+### Subscription
+- `GET /api/v1/subscription/plans` - Get all plans
+- `GET /api/v1/subscription/me` - Get current subscription
+- `GET /api/v1/subscription/usage` - Get usage stats
+
+### Payments
+- `POST /api/v1/payments/checkout/session` - Create payment session
+- `GET /api/v1/payments/checkout/status/{session_id}` - Check payment status
+
+## Spam Categories
+
+| Category | Description |
+|----------|-------------|
+| betting | Illegal betting/gambling |
+| phishing | Credential theft attempts |
+| scam | Financial scams |
+| malware | Malicious links |
+| fraud | Identity fraud |
+| lottery | Fake lottery/prizes |
+| promotional | Unwanted ads |
+
+## Risk Levels
+
+- **low**: Safe - allow
+- **medium**: Suspicious - warn user
+- **high**: Dangerous - block
+- **critical**: Extremely dangerous - block immediately
     """,
     version=settings.APP_VERSION,
     lifespan=lifespan,
