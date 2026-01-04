@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     STRIPE_API_KEY: str = ""
 
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:8081,http://localhost:19006"
+    ALLOWED_ORIGINS: str = "*"
 
     # Premium Features
     FREE_TIER_DAILY_LIMIT: int = 10
