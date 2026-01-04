@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     EMERGENT_LLM_KEY: str = ""
 
     # Stripe Payment
-    STRIPE_API_KEY: str = "sk_test_emergent"
+    STRIPE_API_KEY: str = ""
 
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:8081,http://localhost:19006"
