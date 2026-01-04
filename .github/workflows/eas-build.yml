@@ -42,7 +42,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Configure EAS Project
         run: eas project:init --non-interactive --force || true
