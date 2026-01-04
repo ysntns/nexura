@@ -1,11 +1,13 @@
 {
   "expo": {
-    "name": "NEXURA-AI",
-    "slug": "nexura-ai",
-    "version": "1.0.0",
+    "name": "Nexura-cAIL",
+    "slug": "nexura-cail",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a2e"
     },
@@ -14,27 +16,46 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nexura.ai"
+      "bundleIdentifier": "com.nexura.cail"
     },
     "android": {
-      "package": "com.nexura.ai",
+      "package": "com.nexura.cail",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a2e"
+      },
       "permissions": [
         "READ_SMS",
         "RECEIVE_SMS",
-        "NOTIFICATIONS",
+        "SEND_SMS",
+        "RECEIVE_WAP_PUSH",
+        "RECEIVE_MMS",
         "READ_PHONE_STATE",
         "READ_CALL_LOG",
         "READ_CONTACTS",
-        "CALL_PHONE"
+        "CALL_PHONE",
+        "PROCESS_OUTGOING_CALLS",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE",
+        "POST_NOTIFICATIONS"
       ]
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization",
       "expo-secure-store",
-      "expo-notifications"
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff"
+        }
+      ]
     ],
     "extra": {
       "eas": {
