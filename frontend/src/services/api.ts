@@ -1,17 +1,15 @@
 /**
- * NEXURA-AI API Service
+ * Nexura-cAIL API Service
  * Handles all communication with the backend
  */
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import Constants from 'expo-constants';
 
-// API Configuration
-// For Android Emulator: http://10.0.2.2:8001/api/v1
-// For iOS Simulator: http://localhost:8001/api/v1
-// For Expo Go (same network): http://YOUR_COMPUTER_IP:8001/api/v1
-const API_BASE_URL = __DEV__
-  ? 'http://10.0.2.2:8001/api/v1'  // Android emulator
-  : 'https://api.nexura.ai/api/v1'; // Production
+// API Configuration - Uses environment variable
+const API_BASE_URL = Constants.expoConfig?.extra?.backendUrl || 
+                     process.env.EXPO_PUBLIC_BACKEND_URL || 
+                     'http://10.0.2.2:8001/api/v1';  // Fallback for Android emulator
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'nexura_access_token';
