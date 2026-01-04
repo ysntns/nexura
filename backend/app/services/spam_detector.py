@@ -64,7 +64,13 @@ class SpamDetector:
 
     def __init__(self):
         self.client = None
-        if settings.OPENAI_API_KEY:
+        self.llm_key = settings.EMERGENT_LLM_KEY
+        # Keep backward compatibility but prefer Emergent LLM
+        if self.llm_key:
+            # Use emergent LLM through spam_detector_v2
+            pass
+        elif hasattr(settings, 'OPENAI_API_KEY') and settings.OPENAI_API_KEY:
+            from openai import AsyncOpenAI
             self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
     def _local_pattern_check(self, content: str) -> Optional[SpamAnalysis]:
