@@ -37,13 +37,16 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies (before prebuild)
+        run: yarn install
 
       - name: Generate native Android project
         run: npx expo prebuild --platform android --clean
         env:
           EXPO_NO_TELEMETRY: 1
+
+      - name: Install dependencies (after prebuild)
+        run: yarn install --check-files
 
       - name: Update Kotlin version for Expo 54 compatibility
         run: |
