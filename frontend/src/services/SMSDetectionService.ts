@@ -1,11 +1,22 @@
 /**
  * SMS Detection Service
  * Monitors incoming SMS messages and performs automatic spam analysis
+ * Note: SMS listening requires bare React Native workflow or expo-sms module
  */
-import SmsListener from 'react-native-android-sms-listener';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MessageAPI, Message } from './api';
+import { Platform } from 'react-native';
+
+// Conditional import for SMS listener (only works in bare workflow)
+let SmsListener: any = null;
+try {
+  if (Platform.OS === 'android') {
+    SmsListener = require('react-native-android-sms-listener').default;
+  }
+} catch (error) {
+  console.warn('SMS Listener not available. SMS detection will be disabled.');
+}
 
 const SMS_DETECTION_ENABLED_KEY = 'sms_detection_enabled';
 const SMS_AUTO_BLOCK_KEY = 'sms_auto_block';
