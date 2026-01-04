@@ -1,11 +1,22 @@
 /**
  * Call Detection Service
  * Monitors incoming calls and performs automatic spam lookups
+ * Note: Call detection requires bare React Native workflow
  */
-import CallDetectorManager from 'react-native-call-detection';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CallerAPI, CallerInfo } from './api';
+import { Platform } from 'react-native';
+
+// Conditional import for call detector (only works in bare workflow)
+let CallDetectorManager: any = null;
+try {
+  if (Platform.OS === 'android') {
+    CallDetectorManager = require('react-native-call-detection').default;
+  }
+} catch (error) {
+  console.warn('Call Detector not available. Call detection will be disabled.');
+}
 
 const CALL_DETECTION_ENABLED_KEY = 'call_detection_enabled';
 const LAST_CHECKED_NUMBER_KEY = 'last_checked_number';
