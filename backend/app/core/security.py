@@ -97,3 +97,42 @@ async def get_current_user_id(
         raise credentials_exception
 
     return user_id
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> dict:
+    """Extract full user data from JWT token and database"""
+    from app.core.database import database
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    token = credentials.credentials
+    payload = decode_token(token)
+
+    if payload is None:
+        raise credentials_exception
+
+    user_id: str = payload.get("sub")
+    if user_id is None:
+        raise credentials_exception
+
+    token_type = payload.get("type")
+    if token_type != "access":
+        raise credentials_exception
+
+    # Get user from database
+    user = await database.db["users"].find_one({"_id": user_id})
+    if not user:
+        raise credentials_exception
+    
+    return {
+        "id": str(user["_id"]),
+        "email": user["email"],
+        "full_name": user["full_name"],
+        "language": user.get("language", "en")
+    }
